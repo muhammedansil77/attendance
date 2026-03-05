@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Class Activity Monitoring System with Face Recognition Attendance
 
 A modern MERN application for automated student attendance tracking using face recognition.
@@ -44,3 +45,7 @@ A modern MERN application for automated student attendance tracking using face r
 - `/server`: Express backend with Models, Routes, and Controllers.
 - `/client`: React frontend with Pages, Components, and Services.
 - `/client/public/models`: Pre-trained face-api.js models.
+=======
+# attendance
+Student Attendance Management System
+>>>>>>> 1be5c01a4f4fb4c7de10a50378753e3da5c19e9a
