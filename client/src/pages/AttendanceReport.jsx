@@ -17,6 +17,8 @@ const AttendanceReport = () => {
         subject: ''
     });
 
+    const [sortOrder, setSortOrder] = useState('none');
+
     useEffect(() => {
         const init = async () => {
             try {
@@ -60,7 +62,7 @@ const AttendanceReport = () => {
             { header: 'Status', key: 'status', width: 10 }
         ];
 
-        records.forEach(record => {
+        sortedRecords.forEach(record => {
             worksheet.addRow({
                 date: record.date,
                 time: record.time,
@@ -82,6 +84,14 @@ const AttendanceReport = () => {
         window.URL.revokeObjectURL(url);
     };
 
+    const sortedRecords = [...records].sort((a, b) => {
+        const nameA = a.studentId?.name?.toLowerCase() || '';
+        const nameB = b.studentId?.name?.toLowerCase() || '';
+        if (sortOrder === 'asc') return nameA.localeCompare(nameB);
+        if (sortOrder === 'desc') return nameB.localeCompare(nameA);
+        return 0;
+    });
+
     return (
         <Layout>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -93,7 +103,7 @@ const AttendanceReport = () => {
 
             <div className="card shadow-sm border-0 mb-4 p-4 bg-white">
                 <div className="row g-3">
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <label className="form-label text-dark">Date</label>
                         <input
                             type="date"
@@ -102,7 +112,7 @@ const AttendanceReport = () => {
                             onChange={(e) => setFilters({ ...filters, date: e.target.value })}
                         />
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <label className="form-label text-dark">Class</label>
                         <select
                             className="form-select"
@@ -113,7 +123,7 @@ const AttendanceReport = () => {
                             {classes.map(c => <option key={c._id} value={c._id}>{c.className}</option>)}
                         </select>
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <label className="form-label text-dark">Subject</label>
                         <select
                             className="form-select"
@@ -122,6 +132,18 @@ const AttendanceReport = () => {
                         >
                             <option value="">All Subjects</option>
                             {subjects.map(s => <option key={s._id} value={s.subjectName}>{s.subjectName}</option>)}
+                        </select>
+                    </div>
+                    <div className="col-md-3">
+                        <label className="form-label text-dark">Sort Name</label>
+                        <select
+                            className="form-select"
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value)}
+                        >
+                            <option value="none">Default</option>
+                            <option value="asc">Name: A-Z</option>
+                            <option value="desc">Name: Z-A</option>
                         </select>
                     </div>
                     <div className="col-md-3 d-flex align-items-end">
@@ -147,7 +169,7 @@ const AttendanceReport = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {records.map((record) => (
+                            {sortedRecords.map((record) => (
                                 <tr key={record._id}>
                                     <td>{record.date}</td>
                                     <td>{record.time}</td>

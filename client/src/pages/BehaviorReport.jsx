@@ -12,6 +12,8 @@ const BehaviorReport = () => {
         category: '' // 'CHEATING', 'BEHAVIOR', ''
     });
 
+    const [sortOrder, setSortOrder] = useState('none');
+
     useEffect(() => {
         fetchLogs();
     }, []);
@@ -40,7 +42,7 @@ const BehaviorReport = () => {
             { header: 'Reg No', key: 'regNo', width: 20 }
         ];
 
-        filteredLogs.forEach(log => {
+        sortedLogs.forEach(log => {
             const isCheating = ['LOOKING_AWAY', 'LOOKING_DOWN'].includes(log.eventType);
             worksheet.addRow({
                 timestamp: new Date(log.timestamp).toLocaleString(),
@@ -61,12 +63,20 @@ const BehaviorReport = () => {
         window.URL.revokeObjectURL(url);
     };
 
-    const filteredLogs = logs.filter(log => {
-        if (filters.eventType && log.eventType !== filters.eventType) return false;
-        if (filters.category === 'CHEATING') return ['LOOKING_AWAY', 'LOOKING_DOWN'].includes(log.eventType);
-        if (filters.category === 'BEHAVIOR') return ['DROWSY', 'FACE_NOT_VISIBLE', 'LOOKING_DOWN', 'LOOKING_AWAY'].includes(log.eventType);
-        return true;
-    });
+    const sortedLogs = [...logs]
+        .filter(log => {
+            if (filters.eventType && log.eventType !== filters.eventType) return false;
+            if (filters.category === 'CHEATING') return ['LOOKING_AWAY', 'LOOKING_DOWN'].includes(log.eventType);
+            if (filters.category === 'BEHAVIOR') return ['DROWSY', 'FACE_NOT_VISIBLE', 'LOOKING_DOWN', 'LOOKING_AWAY'].includes(log.eventType);
+            return true;
+        })
+        .sort((a, b) => {
+            const nameA = a.studentId?.name?.toLowerCase() || '';
+            const nameB = b.studentId?.name?.toLowerCase() || '';
+            if (sortOrder === 'asc') return nameA.localeCompare(nameB);
+            if (sortOrder === 'desc') return nameB.localeCompare(nameA);
+            return 0;
+        });
 
     const getIcon = (type) => {
         switch (type) {
@@ -121,6 +131,18 @@ const BehaviorReport = () => {
                             <option value="FACE_NOT_VISIBLE">Face Not Visible</option>
                         </select>
                     </div>
+                    <div className="col-md-3">
+                        <label className="form-label fw-bold small text-muted">Sort Name</label>
+                        <select
+                            className="form-select border-2"
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value)}
+                        >
+                            <option value="none">Default</option>
+                            <option value="asc">Name: A-Z</option>
+                            <option value="desc">Name: Z-A</option>
+                        </select>
+                    </div>
                     <div className="col-md-3 d-flex align-items-end">
                         <button className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2 shadow" onClick={fetchLogs}>
                             <Search size={18} /> Sync Latest
@@ -141,7 +163,7 @@ const BehaviorReport = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredLogs.map((log) => {
+                            {sortedLogs.map((log) => {
                                 const isCheating = ['LOOKING_AWAY', 'LOOKING_DOWN'].includes(log.eventType);
                                 return (
                                     <tr key={log._id}>
@@ -184,7 +206,7 @@ const BehaviorReport = () => {
                                     </tr>
                                 );
                             })}
-                            {filteredLogs.length === 0 && !loading && (
+                            {sortedLogs.length === 0 && !loading && (
                                 <tr>
                                     <td colSpan="4" className="text-center py-5 text-muted">
                                         <ShieldAlert size={48} className="mb-3 opacity-25" />

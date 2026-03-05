@@ -1,16 +1,29 @@
-# React + Vite
+# AI Monitoring System - Frontend (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the client-side of the Smart Classroom Monitoring system, powered by **Vite**, **React**, and **face-api.js**.
 
-Currently, two official plugins are available:
+## 🧠 AI Capabilities
+The frontend handles all the "heavy lifting" for Computer Vision:
+- **SSD Mobilenet v1**: High-accuracy face detection.
+- **Face Landmark Detection**: 68-point mesh tracking for head orientation and eye focus.
+- **Face Recognition**: Generates 128-dimensional descriptors to match students against the database.
+- **实时 Behavior Monitoring**: Logic for detecting "Looking Down", "Looking Away", and "Drowsiness" in real-time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📦 Key Packages
+- `face-api.js`: All AI logic.
+- `exceljs`: Frontend Excel generation for report downloads.
+- `lucide-react`: Modern icon set.
+- `axios`: API communication with the Node.js server.
+- `react-router-dom`: Intelligent routing (Admin/Teacher/Student portals).
 
-## React Compiler
+## 🚀 Running Locally
+```bash
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🏗️ Structure
+- `/src/pages`: Functional portals (Scanner, Behavior Analysis, Reports).
+- `/src/services`: API abstraction layers (Attendance, Student Management).
+- `/src/utils`: AI initialization and face matching utilities.
+- `/public/models`: Binary model weights required by face-api.js.

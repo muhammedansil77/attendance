@@ -1,51 +1,82 @@
-<<<<<<< HEAD
-# Class Activity Monitoring System with Face Recognition Attendance
+# Smart Classroom Monitoring & Face Recognition Attendance (MERN)
 
-A modern MERN application for automated student attendance tracking using face recognition.
+A powerful, real-time classroom management system built on the **MERN Stack (MongoDB, Express, React, Node.js)**. This application uses client-side AI and computer vision to automate student attendance, identify cheating behaviors, and analyze student attention levels.
 
-## Tech Stack
-- **Frontend:** React.js, Bootstrap, Face-api.js, Chart.js, ExcelJS
-- **Backend:** Node.js, Express.js, MongoDB
-- **Auth:** JWT with HTTP-only cookies
+![Project Architecture](mern_ai_architecture_diagram_1772714910652.png)
 
-## Features
-- **Admin Dashboard:** Statistical overview of attendance (Total, Present, Absent, Percentage).
-- **Student Management:** Add students with photo upload and face descriptor extraction.
-- **Face Recognition Scanner:** Real-time webcam scanning with automatic attendance marking.
-- **Attendance Reports:** Filterable records (Daily, Weekly, Monthly, Class-wise) with Excel export.
-- **Secure Auth:** JWT-based login for administrators.
+---
 
-## Installation
+## 🚀 Key Modules & Features
 
-### Prerequisites
-- Node.js installed
-- Local MongoDB running (or update `.env` with Atlas URI)
+### 1. Smart Attendance System
+- **Face Recognition**: Uses `face-api.js` to recognize students in a live camera feed. 
+- **Automated Marking**: Marks students "Present" as soon as they are identified.
+- **Teacher Mode**: Specialized portal for teachers to mark attendance for their specific assigned subjects and batches.
 
-### Setup
-1. **Backend:**
-   ```bash
-   cd server
-   npm install
-   # Configure .env file (already created)
-   node server.js
-   ```
+### 2. Proctored Behavioral Analysis
+- **Cheating Detection**: Monitors for proctoring violations:
+  - **Looking Away**: Detects when students look away from the test/screen for more than 2 seconds.
+  - **Looking Down**: Detects potential phone/paper usage.
+- **Attention Monitoring**: Analyzes focus levels (e.g., drowsiness detection, head orientation).
+- **Incident Logs**: Automatically logs "Anomalies" to the database with student name and high/medium severity flags.
 
-2. **Frontend:**
-   ```bash
-   cd client
-   npm install
-   npm run dev
-   ```
+### 3. Comprehensive Reporting
+- **Behavioral Reports**: A central hub to view all cheating alerts and attention anomalies.
+- **Attendance History**: Daily/Monthly attendance stats for students and teachers.
+- **Excel Export**: Integrated **ExcelJS** for downloading one-click reports for administrative review.
 
-### Default Credentials
-- **Username:** `admin`
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend** | React (Vite) | High-performance SPA with Bootstrap 5 styling. |
+| **AI Engine** | Face-api.js | Neural Networks (Mobilenet v1, Landmarks, Recognition) running on the client browser. |
+| **Backend** | Node.js + Express | REST API for handling authentication and data persistence. |
+| **Database** | MongoDB + Mongoose | Scalable storage for Student Profiles, Attendance, and Behavior Logs. |
+| **Security** | JWT + Bcrypt | JSON Web Token authentication with secure password hashing. |
+| **Reports** | ExcelJS | Professional-grade spreadsheet generation. |
+
+---
+
+## 🏗️ System Architecture
+
+1. **Client Layer (React)**: Captures the camera stream, detects faces using local AI models, and triggers data syncs.
+2. **Logic Layer (Node.js)**: Manages business logic, identifies teachers/admins, and processes attendance rules.
+3. **Data Layer (MongoDB)**: Stores student face descriptors (vectors), logs all anomalous behavior events, and maintains attendance registers.
+
+---
+
+## 💻 Installation & Setup
+
+### 1. Clone & Prerequisites
+- Install **Node.js** (LTS version).
+- Ensure a local **MongoDB** server is running.
+
+### 2. Backend Setup
+```bash
+cd server
+npm install
+# Configure your .env (MONGODB_URI, JWT_SECRET, PORT)
+npm run dev
+```
+
+### 3. Frontend Setup
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### 4. Admin Credentials (Default)
+- **Account:** `admin@example.com`
 - **Password:** `admin`
 
-## Folder Structure
-- `/server`: Express backend with Models, Routes, and Controllers.
-- `/client`: React frontend with Pages, Components, and Services.
-- `/client/public/models`: Pre-trained face-api.js models.
-=======
-# attendance
-Student Attendance Management System
->>>>>>> 1be5c01a4f4fb4c7de10a50378753e3da5c19e9a
+---
+
+## 📁 Source Overview
+- `/client/src/pages`: User interfaces for behavior analysis, attendance, and reports.
+- `/client/src/utils/faceApi.js`: Core AI implementation (model loading & matching).
+- `/server/controllers`: Database logic for logging incidents and marking attendance.
+- `/client/public/models`: Pre-trained Weights for the AI Neural Networks (SSD, Landmarks, etc.)
