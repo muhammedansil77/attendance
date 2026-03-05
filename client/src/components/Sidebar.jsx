@@ -80,6 +80,9 @@ const Sidebar = () => {
                         <NavLink to="/behavior" className={({ isActive }) => `nav-link sidebar-glass-link d-flex align-items-center gap-3 rounded-3 p-2 px-3 ${isActive ? 'sidebar-link-active' : ''}`}>
                             <Brain size={18} /> <span>Behavior Analysis</span>
                         </NavLink>
+                        <NavLink to="/behavior-report" className={({ isActive }) => `nav-link sidebar-glass-link d-flex align-items-center gap-3 rounded-3 p-2 px-3 ${isActive ? 'sidebar-link-active' : ''}`}>
+                            <FileBarChart size={18} /> <span>Behavior Reports</span>
+                        </NavLink>
 
                         <div className="sidebar-section-title">Analytics</div>
                         <NavLink to="/reports" className={({ isActive }) => `nav-link sidebar-glass-link d-flex align-items-center gap-3 rounded-3 p-2 px-3 ${isActive ? 'sidebar-link-active' : ''}`}>
@@ -102,6 +105,9 @@ const Sidebar = () => {
                         </NavLink>
                         <NavLink to="/reports" className={({ isActive }) => `nav-link sidebar-glass-link d-flex align-items-center gap-3 rounded-3 p-2 px-3 ${isActive ? 'sidebar-link-active' : ''}`}>
                             <FileBarChart size={18} /> <span>Class Reports</span>
+                        </NavLink>
+                        <NavLink to="/behavior-report" className={({ isActive }) => `nav-link sidebar-glass-link d-flex align-items-center gap-3 rounded-3 p-2 px-3 ${isActive ? 'sidebar-link-active' : ''}`}>
+                            <FileBarChart size={18} /> <span>Behavior Reports</span>
                         </NavLink>
                     </>
                 )}

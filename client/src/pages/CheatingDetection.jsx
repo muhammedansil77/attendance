@@ -63,7 +63,7 @@ const CheatingDetection = () => {
 
             detections.forEach((detection) => {
                 const match = faceMatcher.findBestMatch(detection.descriptor);
-                const studentId = match.label !== 'unknown' ? match.label : `Unknown-${Math.random().toString(36).substr(2, 5)}`;
+                const studentId = match.label !== 'unknown' ? match.label : 'unknown';
                 const studentData = students.find(s => s._id === studentId);
                 const studentName = studentData ? studentData.name : "Unknown";
 
@@ -144,7 +144,7 @@ const CheatingDetection = () => {
 
         if (now - lastLog > 10000) {
             logCheating({
-                studentId: studentId.startsWith('Unknown') ? null : studentId,
+                studentId: studentId === 'unknown' ? null : studentId,
                 eventType: type
             });
             if (timers.current[studentId]) {
@@ -202,7 +202,7 @@ const CheatingDetection = () => {
                                         <div className="d-flex justify-content-between align-items-start mb-2">
                                             <div>
                                                 <h6 className="mb-0 fw-bold">{data.name}</h6>
-                                                <small className="text-muted">{id.startsWith('Unknown') ? 'Unregistered' : 'Verified Student'}</small>
+                                                <small className="text-muted">{id === 'unknown' ? 'Unregistered' : 'Verified Student'}</small>
                                             </div>
                                             {data.warning && (
                                                 <span className="badge bg-danger animate__animated animate__pulse animate__infinite">

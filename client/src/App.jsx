@@ -17,6 +17,7 @@ import AttendanceStats from './pages/AttendanceStats';
 import TeacherList from './pages/TeacherList';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherAttendanceScanner from './pages/TeacherAttendanceScanner';
+import BehaviorReport from './pages/BehaviorReport';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/teacher-scanner" element={<TeacherAttendanceScanner />} />
         <Route path="/behavior" element={<BehaviorAnalysis />} />
+        <Route path="/behavior-report" element={<BehaviorReport />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
         <Route path="/students" element={<StudentList />} />
         <Route path="/teachers" element={<TeacherList />} />

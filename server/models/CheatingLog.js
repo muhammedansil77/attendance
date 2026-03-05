@@ -9,7 +9,7 @@ const cheatingLogSchema = new mongoose.Schema({
     eventType: {
         type: String,
         required: true,
-        enum: ['LOOKING_AWAY', 'LOOKING_DOWN', 'FACE_NOT_VISIBLE']
+        enum: ['LOOKING_AWAY', 'LOOKING_DOWN', 'FACE_NOT_VISIBLE', 'DROWSY']
     },
     timestamp: {
         type: Date,

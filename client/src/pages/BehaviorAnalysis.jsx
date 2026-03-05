@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import * as faceapi from 'face-api.js';
 import { loadModels, createFaceMatcher } from '../utils/faceApi';
 import { getAllStudents } from '../services/studentService';
+import { logCheating } from '../services/cheatingService';
 import { Brain, AlertTriangle, EyeOff, Moon, ArrowDown, UserX } from 'lucide-react';
 
 const BehaviorAnalysis = () => {
@@ -46,6 +47,34 @@ const BehaviorAnalysis = () => {
             .catch(err => console.error("Camera error:", err));
     };
 
+    const logEvent = async (studentId, type) => {
+        const now = Date.now();
+
+        if (!persistence.current[studentId]) {
+            persistence.current[studentId] = { lastLogs: {} };
+        }
+
+        const lastLog = persistence.current[studentId].lastLogs?.[type] || 0;
+
+        if (now - lastLog > 10000) { // 10s throttle
+            console.log(`[AI Log] Attempting to log ${type} for ${studentId}`);
+            try {
+                await logCheating({
+                    studentId: studentId === 'unknown' || studentId === 'none' ? null : studentId,
+                    eventType: type
+                });
+
+                if (!persistence.current[studentId].lastLogs) {
+                    persistence.current[studentId].lastLogs = {};
+                }
+                persistence.current[studentId].lastLogs[type] = now;
+                console.log(`[AI Log] Successfully logged ${type}`);
+            } catch (err) {
+                console.error(`[AI Log Error] Failed to log ${type}:`, err);
+            }
+        }
+    };
+
     const handleVideoPlay = () => {
         const interval = setInterval(async () => {
             if (!videoRef.current || !modelsLoaded || !faceMatcher) return;
@@ -59,12 +88,12 @@ const BehaviorAnalysis = () => {
 
             detections.forEach(det => {
                 const match = faceMatcher.findBestMatch(det.descriptor);
-                const studentId = match.label !== 'unknown' ? match.label : `Unregistered-${Math.random().toString(36).substr(2, 5)}`;
+                const studentId = match.label;
                 const studentObj = students.find(s => s._id === studentId);
                 const name = studentObj ? studentObj.name : "Unknown Subject";
 
                 if (!persistence.current[studentId]) {
-                    persistence.current[studentId] = { eyesClosedStart: null, headDownStart: null, lastSeen: now };
+                    persistence.current[studentId] = { eyesClosedStart: null, headDownStart: null, lastSeen: now, lastLogs: {} };
                 }
                 const p = persistence.current[studentId];
                 p.lastSeen = now;
@@ -72,21 +101,18 @@ const BehaviorAnalysis = () => {
                 const landmarks = det.landmarks;
                 const behaviors = [];
 
-                // 1. SLEEPY DETECTION (Eye Closure)
+                // 1. SLEEPY DETECTION (Eye Closure) - DROWSY
                 const leftEye = landmarks.getLeftEye();
                 const rightEye = landmarks.getRightEye();
-
-                // Simple vertical distance check
                 const getEyeHeight = (eye) => Math.abs(eye[1].y - eye[5].y) + Math.abs(eye[2].y - eye[4].y);
                 const avgEyeHeight = (getEyeHeight(leftEye) + getEyeHeight(rightEye)) / 2;
-
-                // If eye height is very small relative to face size
                 const isEyesClosed = avgEyeHeight < (det.detection.box.height * 0.015);
 
                 if (isEyesClosed) {
                     if (!p.eyesClosedStart) p.eyesClosedStart = now;
                     if (now - p.eyesClosedStart > 3000) {
                         behaviors.push({ type: 'danger', icon: <Moon size={16} />, msg: 'Sleepy / Drowsy Detected' });
+                        logEvent(studentId, 'DROWSY');
                     }
                 } else {
                     p.eyesClosedStart = null;
@@ -100,10 +126,11 @@ const BehaviorAnalysis = () => {
                 const headHeight = det.detection.box.height;
                 const verticalRatio = (noseY - eyeY) / headHeight;
 
-                if (verticalRatio < 0.12) { // Head tilted down significantly
+                if (verticalRatio < 0.12) {
                     if (!p.headDownStart) p.headDownStart = now;
                     if (now - p.headDownStart > 3000) {
                         behaviors.push({ type: 'warning', icon: <ArrowDown size={16} />, msg: 'Head Down - Not Paying Attention' });
+                        logEvent(studentId, 'LOOKING_DOWN');
                     }
                 } else {
                     p.headDownStart = null;
@@ -119,17 +146,17 @@ const BehaviorAnalysis = () => {
 
                 if (Math.abs(yawAngle) > 25) {
                     behaviors.push({ type: 'info', icon: <EyeOff size={16} />, msg: 'Looking Away From Screen' });
+                    logEvent(studentId, 'LOOKING_AWAY');
                 }
 
                 currentMonitored[studentId] = { name, behaviors };
             });
 
-            // 4. FACE NOT DETECTED (Global or per tracked subject)
-            // If total detections = 0 for 5 seconds
             if (detections.length === 0) {
                 if (!persistence.current['global_missing']) persistence.current['global_missing'] = now;
                 if (now - persistence.current['global_missing'] > 5000) {
                     setMonitoredData({ 'none': { name: 'System', behaviors: [{ type: 'secondary', icon: <UserX size={16} />, msg: 'Face Not Visible' }] } });
+                    logEvent('none', 'FACE_NOT_VISIBLE');
                 }
             } else {
                 persistence.current['global_missing'] = null;

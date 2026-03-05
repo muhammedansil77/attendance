@@ -13,7 +13,9 @@ exports.logCheatingEvent = async (req, res) => {
 
 exports.getCheatingLogs = async (req, res) => {
     try {
-        const logs = await CheatingLog.find().populate('studentId').sort('-timestamp');
+        const logs = await CheatingLog.find()
+            .populate({ path: 'studentId', populate: { path: 'classId' } })
+            .sort('-timestamp');
         res.json(logs);
     } catch (error) {
         res.status(500).json({ message: error.message });
